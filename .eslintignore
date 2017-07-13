@@ -1,0 +1,7 @@
+node_modules/*
+public/*
+artifacts/*
+test/support/lib/*
+tmp/*
+coverage/*
+test/fixtures/combined/huge.js

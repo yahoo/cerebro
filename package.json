@@ -1,0 +1,26 @@
+{
+  "name": "cerebro",
+  "version": "1.0.0",
+  "description": "A generic configuration system for Node.js.",
+  "author": "Scott Sperling <scsper@yahoo.com>",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "devDependencies": {
+    "chai": "^4.1.0",
+    "grunt": "~1.0.1",
+    "grunt-benchmark": "~1.0.0",
+    "grunt-cli": "~1.2.0",
+    "grunt-eslint": "^20.0.0",
+    "grunt-mocha-istanbul": "^5.0.2",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0",
+    "phantomjs-prebuilt": "~2.1.13",
+    "sinon": "~1.17.6",
+    "sinon-chai": "^2.11.0"
+  },
+  "dependencies": {
+    "tv4": "^1.2.7",
+    "lodash": "^4.16.6",
+    "buffer-crc32": "^0.2.13"
+  }
+}

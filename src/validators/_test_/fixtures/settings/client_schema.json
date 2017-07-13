@@ -1,0 +1,19 @@
+{
+    "buckets": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+            "enum": ["CMUSCVRT1", "CMUSCVRT3"]
+        }
+    },
+
+    "farms": {
+        "type": "array",
+        "minItems": 1,
+        "uniqueItems": true,
+        "items": {
+            "type": "number"
+        }
+    }
+}

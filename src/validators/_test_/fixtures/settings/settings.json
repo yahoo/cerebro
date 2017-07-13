@@ -1,0 +1,51 @@
+[
+  {
+    "setting": "optionsFoldersv3",
+    "value": true
+  },
+  {
+    "setting": "optionsFoldersv2",
+    "value": true
+  },
+  {
+    "setting": "convReplyBucket",
+    "value": false,
+    "except": [
+      {
+        "value": true,
+        "buckets": ["CMUSCVRT3"]
+      }
+    ]
+  },
+  {
+    "setting": "convEditBucket",
+    "value": true,
+    "except": [
+      {
+        "value": false,
+        "buckets": ["CMUSCVRT3", "CMUSCVRT1"],
+        "farms": [9323]
+      }
+    ]
+  },
+  {
+    "setting": "useV3FoldersPercentage",
+    "value": false,
+    "except": [
+      {
+        "value": true,
+        "percentage": 25
+      }
+    ]
+  },
+  {
+    "setting": "useV3FoldersRandomPercentage",
+    "value": false,
+    "except": [
+      {
+        "value": true,
+        "randomPercentage": 50
+      }
+    ]
+  }
+]

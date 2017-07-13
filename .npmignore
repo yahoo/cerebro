@@ -1,0 +1,12 @@
+_test_
+/grunt_tasks/
+/artifacts/
+/coverage/
+/test/
+/tmp/
+/docs/
+.eslintignore
+.npmignore
+Gruntfile.js
+screwdriver.yaml
+*.log

@@ -1,0 +1,73 @@
+{
+  "env": {
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true,
+      "forOf": false,
+      "generators": false,
+      "objectLiteralDuplicateProperties": false,
+      "regexYFlag": false,
+      "templateStrings": true,
+      "superInFunctions": false
+    }
+  },
+  "rules": {
+    "dot-notation": "warn",
+    "eol-last": "error",
+    "max-depth": ["warn", 6],
+    "no-alert": "warn",
+    "no-console": "error",
+    "no-mixed-requires": "off",
+    "max-statements": ["warn", 100],
+    "new-cap": "warn",
+    "no-lonely-if": "error",
+    "no-nested-ternary": "error",
+    "no-spaced-func": "warn",
+    "no-underscore-dangle": "off",
+    "no-trailing-spaces": "error",
+    "no-use-before-define": ["warn", "nofunc"],
+    "quotes": ["error", "single"],
+    "jsx-quotes": ["error", "prefer-double"],
+    "strict": "off",
+    "no-undef": "error",
+    "comma-dangle": ["error", "never"],
+    "comma-spacing": ["error", {"before": false, "after": true}],
+    "no-whitespace-before-property": "error",
+    "space-infix-ops": "error",
+    "indent": "error",
+
+    "semi": ["error", "always"],
+    "consistent-this": ["error", "_this"],
+    "eqeqeq": "error",
+    "no-unused-expressions": "error",
+    "no-unused-vars": "error",
+    "no-else-return": "error",
+    "max-len": ["error", 120],
+    "no-multiple-empty-lines": "error",
+    "newline-after-var": "error",
+    "block-spacing": ["error", "always"],
+    "space-before-blocks": ["error", "always"],
+    "space-in-parens": ["error", "never"],
+    "quote-props": ["error", "as-needed", {"keywords": false}],
+    "computed-property-spacing": ["error", "never"],
+    "comma-style": ["error", "last"],
+    "no-multi-spaces": "error",
+    "key-spacing": ["error", {"beforeColon": false, "afterColon": true}],
+    "array-bracket-spacing": ["error", "never"],
+    "vars-on-top": "error",
+    "brace-style": ["error", "1tbs"],
+    "no-lone-blocks": "warn",
+    "curly": ["error", "all"],
+    "space-before-function-paren": ["error", "never"],
+
+    "constructor-super": "error",
+    "arrow-spacing": ["error", {"before": true, "after": true}],
+    "no-dupe-class-members": "error",
+    "template-curly-spacing": "error"
+  }
+}

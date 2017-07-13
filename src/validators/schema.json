@@ -1,0 +1,53 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "Cerebro Schema",
+    "type": "array",
+    "items": {
+        "type": "object",
+        "properties": {
+            "setting": {
+                "type": "string"
+            },
+            "value": {
+                "type" : ["string", "number", "boolean", "object", "array"],
+                "additionalProperties": true
+            },
+            "valueType": {
+                "type": ["string", "object"],
+                "properties": {
+                    "regex": "string",
+                    "iregex": "string"
+                },
+                "additionalProperties": true
+            },
+            "except": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "properties": {
+                        "value": {
+                            "type" : ["string", "number", "boolean", "object", "array"],
+                            "additionalProperties": true
+                        },
+                        "setting": {
+                            "type": "string"
+                        },
+                        "percentage":  {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100
+                        },
+                        "randomPercentage": {
+                            "type": "number",
+                            "minimum": 0,
+                            "maximum": 100
+                        }
+                    },
+                    "required": ["value"]
+                }
+            }
+        },
+        "required": ["setting", "value"]
+    },
+    "definitions": {}
+}
