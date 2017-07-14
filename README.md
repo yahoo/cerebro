@@ -1,6 +1,9 @@
 Cerebro
 ===============
 
+[![Build Status](https://travis-ci.org/yahoo/cerebro.svg?branch=master)](https://travis-ci.org/yahoo/cerebro)
+[![Coverage Status](https://coveralls.io/repos/yahoo/cerebro/badge.svg?branch=master&service=github)](https://coveralls.io/github/yahoo/cerebro?branch=master)
+
 A generic configuration system for Node.js.
 
 Cerebro receives two inputs:
