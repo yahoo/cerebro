@@ -5,6 +5,9 @@
   "author": "Scott Sperling <scsper@yahoo.com>",
   "license": "MIT",
   "main": "./src/index.js",
+  "scripts": {
+    "test": "grunt test:ci"
+  },
   "devDependencies": {
     "chai": "^4.1.0",
     "grunt": "~1.0.1",
