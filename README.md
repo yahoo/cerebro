@@ -228,3 +228,7 @@ The `dimensionValue` would be [“en”], and the testValue would be whatever th
 
 ## Overrides
 We may want to override a certain setting, regardless of what the configuration says.  To do this, the client must pass an object, `overrides`, into the Cerebro constructor.  The keys of the `overrides` object will be the setting names and the value will be the value of the setting.  Typically, these overrides would come from the request URL, but any source can be used.
+
+## Thanks
+
+* Many thanks to Alasdair Mercer for donating the naming rights :) 
