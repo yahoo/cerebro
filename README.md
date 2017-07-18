@@ -15,7 +15,7 @@ Cerebro outputs the resolved configuration.
 ## Usage
 
 ```js
-import Cerebro from ('cerebro');
+import Cerebro from 'cerebro';
 
 const configuration = [{
   setting: 'timer',
