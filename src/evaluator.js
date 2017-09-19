@@ -10,7 +10,7 @@
 var Condition = require('./condition.js'),
     Evaluator,
     crc32 = require('buffer-crc32'),
-    template = require('lodash/template'),
+    template = require('lodash.template'),
     isTemplate = require('./validators/helpers.js').isTemplate;
 
 /**
