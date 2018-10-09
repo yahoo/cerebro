@@ -728,6 +728,9 @@ describe('schema validation', function() {
     describe('feature dependency check', function() {
         beforeEach(function() {
             this.data = [{
+                setting: 'someFeature',
+                value: false
+            }, {
                 setting: 'setting',
                 value: false,
                 except: []
@@ -739,7 +742,7 @@ describe('schema validation', function() {
         it('does not return an error when `setting` is a string', function() {
             var report;
 
-            this.data[0].except.push({
+            this.data[1].except.push({
                 value: true,
                 setting: 'someFeature'
             });
@@ -750,14 +753,14 @@ describe('schema validation', function() {
         });
 
         it('returns an error when `setting` is not a string', function() {
-            this.data[0].except.push({
+            this.data[1].except.push({
                 value: true
             });
 
             [true, 42, {}, []].forEach(function(valType) {
                 var report;
 
-                this.data[0].except.setting = valType;
+                this.data[1].except[0].setting = valType;
 
                 report = validate(this.clientSchema, this.data);
                 expect(report.valid).to.be.false;

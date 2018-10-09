@@ -91,22 +91,29 @@ function _validateCrossSettingDependencies(configuration) {
         errors = [];
 
     configuration.forEach(function(entry) {
-        var dependencyName = entry.except && entry.except.setting;
+        var dependencies = entry.except;
 
-        if (dependencyName) {
-            // if an entry depends on itself, error
-            if (dependencyName === entry.setting) {
-                errors.push({
-                    message: 'Setting `' + dependencyName + '` depends on itself.'
-                });
-            }
+        if (Array.isArray(dependencies)) {
+            dependencies.forEach(dependency => {
+                var dependencyName = dependency.setting;
 
-            // if an entry has not been referenced yet, error
-            if (!existingSettings.hasOwnProperty(dependencyName)) {
-                errors.push({
-                    message: 'Setting `' + dependencyName + '` was referenced before it was resolved.'
-                });
-            }
+                if (dependencyName) {
+                    // if an entry depends on itself, error
+                    if (dependencyName === entry.setting) {
+                        errors.push({
+                            message: 'Setting `' + dependencyName + '` depends on itself.'
+                        });
+                    }
+
+                    // if an entry has not been referenced yet, error
+                    if (!existingSettings.hasOwnProperty(dependencyName)) {
+                        errors.push({
+                            message: 'For ' + entry.setting + ', your dependency `' + dependencyName +
+                            '` was referenced before it was resolved. Move the definition of it above ' + entry.setting
+                        });
+                    }
+                }
+            });
         }
 
         // add it to the list of settings that exists
