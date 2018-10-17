@@ -36,11 +36,12 @@ describe('cross setting validation', function() {
     it('returns an error when a setting is not referenced before it is resolved', function() {
         var report;
 
-        this.config[1].except.setting = 'settingC';
+        this.config[0].except = [{setting: 'settingC', value: false}];
 
         report = validate(this.clientSchema, this.config);
 
-        expect(report.errors[0].message).to.equal('Setting `settingC` was referenced before it was resolved.');
+        expect(report.errors[0].message).to.equal('For settingA, your dependency `settingC` was referenced before it' +
+        ' was resolved. Move the definition of it above settingA');
         expect(report.valid).to.be.false;
     });
 
@@ -50,18 +51,19 @@ describe('cross setting validation', function() {
         // i'm writing this test.
         var report;
 
-        this.config[1].except.setting = 'settingC';
+        this.config[1].except[0].setting = 'settingC';
 
         report = validate(this.clientSchema, this.config);
 
-        expect(report.errors[0].message).to.equal('Setting `settingC` was referenced before it was resolved.');
+        expect(report.errors[0].message).to.equal('For settingB, your dependency `settingC` was referenced before it' +
+        ' was resolved. Move the definition of it above settingB');
         expect(report.valid).to.be.false;
     });
 
     it('returns an error when the setting depends on itself', function() {
         var report;
 
-        this.config[1].except.setting = 'settingB';
+        this.config[1].except[0].setting = 'settingB';
 
         report = validate(this.clientSchema, this.config);
 
