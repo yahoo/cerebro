@@ -17,10 +17,9 @@ function Cerebro(config, options) {
 
     this._config = this._preprocess(config);
     this._customEvaluators = options && options.customEvaluators;
+    this._tagEvaluator = options && options.tagEvaluator;
 
-    if (this._customEvaluators) {
-        this._validateCustomEvaluators(this._customEvaluators);
-    }
+    this._validateCustomEvaluators();
 }
 
 /**
@@ -52,7 +51,13 @@ Cerebro.rehydrate = function(dehydratedObject) {
     // if the dehydratedObject is not valid, JSON parse will fail and throw an error
     var rehydratedObj = JSON.parse(dehydratedObject);
 
-    return new CerebroConfig(rehydratedObj);
+    const {_resolved, _resolvedAndTagged} = rehydratedObj;
+    const builtObject = {
+        answers: _resolved,
+        taggedAnswers: _resolvedAndTagged
+    };
+
+    return new CerebroConfig(builtObject);
 };
 
 /**
@@ -60,12 +65,13 @@ Cerebro.rehydrate = function(dehydratedObject) {
  * @constructor
  * @param {Object} resolvedConfig - object created by building context with settings config
  */
-function CerebroConfig(resolvedConfig) {
-    if (!resolvedConfig) {
+function CerebroConfig(resolvedConfig = {}) {
+    if (!resolvedConfig.answers) {
         throw new Error('`resolvedConfig` is required');
     }
 
-    this._resolved = resolvedConfig;
+    this._resolved = resolvedConfig.answers;
+    this._resolvedAndTagged = resolvedConfig.taggedAnswers;
 }
 
 /**
@@ -120,7 +126,10 @@ CerebroConfig.prototype.getValue = function(name) {
  * @return {JSON} Map of settings to values.
  */
 CerebroConfig.prototype.dehydrate = function() {
-    return JSON.stringify(this._resolved);
+    const {_resolved, _resolvedAndTagged} = this;
+    const dehydratedObject = {_resolved, _resolvedAndTagged};
+
+    return JSON.stringify(dehydratedObject);
 };
 
 /**
@@ -134,6 +143,16 @@ CerebroConfig.prototype.getRawConfig = function() {
     return this._resolved;
 };
 
+/**
+ * Returns the resolved and tagged config, similar to getRawConfig,
+ * but includes only those entries that were tagged per caller's tag config function
+ *
+ * @return {Object} The resolved and taggedconfig.
+ */
+CerebroConfig.prototype.getTaggedConfig = function() {
+    return this._resolvedAndTagged;
+};
+
 /** @private */
 Cerebro.prototype._preprocess = function(config) {
     // should maybe deep copy the config?
@@ -145,19 +164,29 @@ Cerebro.prototype._preprocess = function(config) {
 /** @private */
 Cerebro.prototype._build = function(context, overrides) {
     var answers = {},
+        taggedAnswers = {},
+        tagged,
         answer;
 
     this._config.forEach(function(entry) {
         answer = Evaluator.evaluate(entry, context, overrides, answers, this._customEvaluators);
+        tagged = this._tagEvaluator && this._tagEvaluator(entry.tags);
 
         if (answer.key) {
             if (!answers.hasOwnProperty(answer.key)) {
                 answers[answer.key] = answer.value;
+
+                if (tagged) {
+                    taggedAnswers[answer.key] = answer.value;
+                }
             }
         }
     }, this);
 
-    return answers;
+    return {
+        answers,
+        taggedAnswers
+    };
 };
 
 /**
@@ -167,7 +196,8 @@ Cerebro.prototype._build = function(context, overrides) {
  * @private
  * @param {Object} customEvaluators The object to be evaluated
  */
-Cerebro.prototype._validateCustomEvaluators = function(customEvaluators) {
+Cerebro.prototype._validateCustomEvaluators = function() {
+    var customEvaluators = this._customEvaluators;
     var key;
 
     // since customEvaluators is optional, do nothing if it is null or undefined

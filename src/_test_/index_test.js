@@ -62,6 +62,46 @@ describe('./index.js', function() {
         });
 
         describe('#resolveConfig', function() {
+            it('returns only tagged entries', function() {
+                var config = this.config.map(function(e) {
+                    var setting = Object.keys(e)[0];
+                    var value = e[setting];
+
+                    return {setting, value};
+                });
+                var resolved = config.reduce(function(s, e) {
+                    return Object.assign({}, {[e.setting]: e.value});
+                }, {});
+                var options = {
+                    tagEvaluator: () => true
+                };
+                var cerebro = new Cerebro(config, options);
+                var actualConfig = cerebro.resolveConfig({});
+
+                expect(actualConfig._resolved).to.deep.equal(resolved);
+                expect(actualConfig._resolvedAndTagged).to.deep.equal(resolved);
+            });
+
+            it('returns no untagged entries', function() {
+                var config = this.config.map(function(e) {
+                    var setting = Object.keys(e)[0];
+                    var value = e[setting];
+
+                    return {setting, value};
+                });
+                var resolved = config.reduce(function(s, e) {
+                    return Object.assign({}, {[e.setting]: e.value});
+                }, {});
+                var options = {
+                    tagEvaluator: () => false
+                };
+                var cerebro = new Cerebro(config, options);
+                var actualConfig = cerebro.resolveConfig({});
+
+                expect(actualConfig._resolved).to.deep.equal(resolved);
+                expect(actualConfig._resolvedAndTagged).to.deep.equal({});
+            });
+
             it('throws an error if context is not passed', function() {
                 var cerebro = new Cerebro(this.config);
 
@@ -73,7 +113,7 @@ describe('./index.js', function() {
 
         describe('#rehydrate', function() {
             it('returns a new usable instance of CerebroConfig', function() {
-                var cerebroConfig = Cerebro.rehydrate(JSON.stringify({a: 5}));
+                var cerebroConfig = Cerebro.rehydrate(JSON.stringify({_resolved: {a: 5}}));
 
                 expect(cerebroConfig.getValue('a')).to.equal(5);
             });
@@ -92,6 +132,10 @@ describe('./index.js', function() {
                 expect(function() {
                     Cerebro.rehydrate(null);
                 }).to.throw(Error);
+
+                expect(function() {
+                    Cerebro.rehydrate('{}');
+                }).to.throw(Error);
             });
         });
     });
@@ -99,12 +143,14 @@ describe('./index.js', function() {
     describe('CerebroConfig', function() {
         beforeEach(function() {
             var cerebro = new Cerebro([]),
-                rawConfig = {a: 111, b: true, c: {multilevel: [1, 2]}};
+                rawConfig = {a: 111, b: true, c: {multilevel: [1, 2]}},
+                taggedConfig = {b: rawConfig.b};
 
             this.sandbox.stub(Cerebro.prototype, '_build', function() {
-                return rawConfig;
+                return {answers: rawConfig, taggedAnswers: taggedConfig};
             });
             this.rawConfig = rawConfig;
+            this.taggedConfig = taggedConfig;
             this.cerebroConfig = cerebro.resolveConfig({});
         });
 
@@ -152,11 +198,22 @@ describe('./index.js', function() {
             });
         });
 
+        describe('#getTaggedConfig', function() {
+            it('returns tagged config used in constructor', function() {
+                var actualConfig = this.cerebroConfig.getTaggedConfig();
+
+                expect(actualConfig).to.deep.equal(this.taggedConfig);
+            });
+        });
+
         describe('#dehydrate', function() {
             it('returns a JSON string', function() {
                 var json = this.cerebroConfig.dehydrate();
 
-                expect(json).to.equal(JSON.stringify(this.rawConfig));
+                expect(json).to.equal(JSON.stringify({
+                    _resolved: this.rawConfig,
+                    _resolvedAndTagged: this.taggedConfig
+                }));
             });
         });
     });

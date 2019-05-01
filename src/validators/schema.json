@@ -8,6 +8,12 @@
             "setting": {
                 "type": "string"
             },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            },
             "value": {
                 "type" : ["string", "number", "boolean", "object", "array"],
                 "additionalProperties": true
