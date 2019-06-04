@@ -50,10 +50,10 @@ Cerebro.rehydrate = function(dehydratedObject) {
     // if the dehydratedObject is not valid, JSON parse will fail and throw an error
     var rehydratedObj = JSON.parse(dehydratedObject);
 
-    const {_resolved, _tags} = rehydratedObj;
+    const {_resolved, _labels} = rehydratedObj;
     const builtObject = {
         answers: _resolved,
-        tags: _tags
+        labels: _labels
     };
 
     return new CerebroConfig(builtObject);
@@ -70,7 +70,7 @@ function CerebroConfig(resolvedConfig = {}) {
     }
 
     this._resolved = resolvedConfig.answers;
-    this._tags = resolvedConfig.tags;
+    this._labels = resolvedConfig.labels;
 }
 
 /**
@@ -125,8 +125,8 @@ CerebroConfig.prototype.getValue = function(name) {
  * @return {JSON} Map of settings to values.
  */
 CerebroConfig.prototype.dehydrate = function() {
-    const {_resolved, _tags} = this;
-    const dehydratedObject = {_resolved, _tags};
+    const {_resolved, _labels} = this;
+    const dehydratedObject = {_resolved, _labels};
 
     return JSON.stringify(dehydratedObject);
 };
@@ -143,12 +143,14 @@ CerebroConfig.prototype.getRawConfig = function() {
 };
 
 /**
- * Returns the tags from the entries
+ * Returns the labels from the entries
  *
- * @return {Object} The tags.
+ * @return {Object} The labels as an object just like getRawConfig,
+ * where each key is setting name and its value is an array of string labels.
+ * Entries with no labels are represented as an empty array (not undefined).
  */
-CerebroConfig.prototype.getTags = function() {
-    return this._tags;
+CerebroConfig.prototype.getLabels = function() {
+    return this._labels;
 };
 
 /** @private */
@@ -162,7 +164,7 @@ Cerebro.prototype._preprocess = function(config) {
 /** @private */
 Cerebro.prototype._build = function(context, overrides) {
     var answers = {},
-        tags = {},
+        labels = {},
         answer;
 
     this._config.forEach(function(entry) {
@@ -171,14 +173,14 @@ Cerebro.prototype._build = function(context, overrides) {
         if (answer.key) {
             if (!answers.hasOwnProperty(answer.key)) {
                 answers[answer.key] = answer.value;
-                tags[answer.key] = entry.tags || [];
+                labels[answer.key] = entry.labels || [];
             }
         }
     }, this);
 
     return {
         answers,
-        tags
+        labels
     };
 };
 

@@ -229,6 +229,28 @@ The `dimensionValue` would be [“en”], and the testValue would be whatever th
 ## Overrides
 We may want to override a certain setting, regardless of what the configuration says.  To do this, the client must pass an object, `overrides`, into the Cerebro constructor.  The keys of the `overrides` object will be the setting names and the value will be the value of the setting.  Typically, these overrides would come from the request URL, but any source can be used.
 
+### Labels
+Label metadata may be added to each entry in the form of an array of strings.  This does not affect the evaluation of setting entries into their resulting values.  It's stricly meant as a way to contextualize those values.  
+
+For instance, values that are not wanted as part of a client payload can be marked "server".  
+
+Note that this could be used to create subsets of values that no longer have all of the original entries with contraints such as dependencies.  
+
+An alternative way to organize and contextualize is to group settings into separate files.
+
+
+```js
+[{
+    setting: 'enableNewFeature',
+    labels: ['server', 'namedFeatureGroup'],
+    value: false,
+    except: [{
+        value: true,
+        partialLocale: ['en']
+    }]
+}]
+```
+
 ## Thanks
 
 * Many thanks to Alasdair Mercer for donating the naming rights :) 

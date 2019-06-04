@@ -15,7 +15,7 @@ require('../../test/setup/server');
 describe('./index.js', function() {
     beforeEach(function() {
         this.config = [{a: 1}];
-        this.tags = {a: ['s'], b: ['c'], c: ['s', 'c']};
+        this.labels = {a: ['s'], b: ['c'], c: ['s', 'c']};
         this.context = {b: 2};
         this.overrides = {c: 3};
         this.options = {
@@ -63,50 +63,50 @@ describe('./index.js', function() {
         });
 
         describe('#resolveConfig', function() {
-            it('returns tags when defined', function() {
-                var tagEntries = this.tags;
+            it('returns labels when defined', function() {
+                var labelEntries = this.labels;
                 var config = this.config.map(function(e) {
                     var setting = Object.keys(e)[0];
                     var value = e[setting];
-                    var tags = tagEntries[setting] || [];
+                    var labels = labelEntries[setting] || [];
 
-                    return {setting, value, tags};
+                    return {setting, value, labels};
                 });
                 var resolved = config.reduce(function(s, e) {
                     return Object.assign({}, {[e.setting]: e.value});
                 }, {});
-                var expectedTags = config.reduce(function(s, e) {
-                    return Object.assign({}, {[e.setting]: e.tags});
+                var expectedLabels = config.reduce(function(s, e) {
+                    return Object.assign({}, {[e.setting]: e.labels});
                 }, {});
                 var options = {};
                 var cerebro = new Cerebro(config, options);
                 var actualConfig = cerebro.resolveConfig({});
 
                 expect(actualConfig._resolved).to.deep.equal(resolved);
-                expect(actualConfig._tags).to.deep.equal(expectedTags);
+                expect(actualConfig._labels).to.deep.equal(expectedLabels);
             });
 
-            it('returns no tags when not defined', function() {
-                var tagEntries = {};
+            it('returns no labels when not defined', function() {
+                var labelEntries = {};
                 var config = this.config.map(function(e) {
                     var setting = Object.keys(e)[0];
                     var value = e[setting];
-                    var tags = tagEntries[setting] || [];
+                    var labels = labelEntries[setting] || [];
 
-                    return {setting, value, tags};
+                    return {setting, value, labels};
                 });
                 var resolved = config.reduce(function(s, e) {
                     return Object.assign({}, {[e.setting]: e.value});
                 }, {});
-                var tags = config.reduce(function(s, e) {
-                    return Object.assign({}, {[e.setting]: e.tags});
+                var labels = config.reduce(function(s, e) {
+                    return Object.assign({}, {[e.setting]: e.labels});
                 }, {});
                 var options = {};
                 var cerebro = new Cerebro(config, options);
                 var actualConfig = cerebro.resolveConfig({});
 
                 expect(actualConfig._resolved).to.deep.equal(resolved);
-                expect(actualConfig._tags).to.deep.equal(tags);
+                expect(actualConfig._labels).to.deep.equal(labels);
             });
 
             it('throws an error if context is not passed', function() {
@@ -151,13 +151,13 @@ describe('./index.js', function() {
         beforeEach(function() {
             var cerebro = new Cerebro([]),
                 rawConfig = {a: 111, b: true, c: {multilevel: [1, 2]}},
-                tags = {a: ['s'], b: ['c'], c: ['s', 'c']};
+                labels = {a: ['s'], b: ['c'], c: ['s', 'c']};
 
             this.sandbox.stub(Cerebro.prototype, '_build', function() {
-                return {answers: rawConfig, tags};
+                return {answers: rawConfig, labels};
             });
             this.rawConfig = rawConfig;
-            this.tags = tags;
+            this.labels = labels;
             this.cerebroConfig = cerebro.resolveConfig({});
         });
 
@@ -205,11 +205,11 @@ describe('./index.js', function() {
             });
         });
 
-        describe('#getTags', function() {
-            it('returns tagged config used in constructor', function() {
-                var actualConfig = this.cerebroConfig.getTags();
+        describe('#getLabels', function() {
+            it('returns labeled config used in constructor', function() {
+                var actualConfig = this.cerebroConfig.getLabels();
 
-                expect(actualConfig).to.deep.equal(this.tags);
+                expect(actualConfig).to.deep.equal(this.labels);
             });
         });
 
@@ -219,7 +219,7 @@ describe('./index.js', function() {
 
                 expect(json).to.equal(JSON.stringify({
                     _resolved: this.rawConfig,
-                    _tags: this.tags
+                    _labels: this.labels
                 }));
             });
         });
