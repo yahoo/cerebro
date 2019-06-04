@@ -17,7 +17,6 @@ function Cerebro(config, options) {
 
     this._config = this._preprocess(config);
     this._customEvaluators = options && options.customEvaluators;
-    this._tagEvaluator = options && options.tagEvaluator;
 
     this._validateCustomEvaluators();
 }
@@ -51,10 +50,10 @@ Cerebro.rehydrate = function(dehydratedObject) {
     // if the dehydratedObject is not valid, JSON parse will fail and throw an error
     var rehydratedObj = JSON.parse(dehydratedObject);
 
-    const {_resolved, _resolvedAndTagged} = rehydratedObj;
+    const {_resolved, _tags} = rehydratedObj;
     const builtObject = {
         answers: _resolved,
-        taggedAnswers: _resolvedAndTagged
+        tags: _tags
     };
 
     return new CerebroConfig(builtObject);
@@ -71,7 +70,7 @@ function CerebroConfig(resolvedConfig = {}) {
     }
 
     this._resolved = resolvedConfig.answers;
-    this._resolvedAndTagged = resolvedConfig.taggedAnswers;
+    this._tags = resolvedConfig.tags;
 }
 
 /**
@@ -126,8 +125,8 @@ CerebroConfig.prototype.getValue = function(name) {
  * @return {JSON} Map of settings to values.
  */
 CerebroConfig.prototype.dehydrate = function() {
-    const {_resolved, _resolvedAndTagged} = this;
-    const dehydratedObject = {_resolved, _resolvedAndTagged};
+    const {_resolved, _tags} = this;
+    const dehydratedObject = {_resolved, _tags};
 
     return JSON.stringify(dehydratedObject);
 };
@@ -144,13 +143,12 @@ CerebroConfig.prototype.getRawConfig = function() {
 };
 
 /**
- * Returns the resolved and tagged config, similar to getRawConfig,
- * but includes only those entries that were tagged per caller's tag config function
+ * Returns the tags from the entries
  *
- * @return {Object} The resolved and taggedconfig.
+ * @return {Object} The tags.
  */
-CerebroConfig.prototype.getTaggedConfig = function() {
-    return this._resolvedAndTagged;
+CerebroConfig.prototype.getTags = function() {
+    return this._tags;
 };
 
 /** @private */
@@ -164,28 +162,23 @@ Cerebro.prototype._preprocess = function(config) {
 /** @private */
 Cerebro.prototype._build = function(context, overrides) {
     var answers = {},
-        taggedAnswers = {},
-        tagged,
+        tags = {},
         answer;
 
     this._config.forEach(function(entry) {
         answer = Evaluator.evaluate(entry, context, overrides, answers, this._customEvaluators);
-        tagged = this._tagEvaluator && this._tagEvaluator(entry.tags);
 
         if (answer.key) {
             if (!answers.hasOwnProperty(answer.key)) {
                 answers[answer.key] = answer.value;
-
-                if (tagged) {
-                    taggedAnswers[answer.key] = answer.value;
-                }
+                tags[answer.key] = entry.tags || [];
             }
         }
     }, this);
 
     return {
         answers,
-        taggedAnswers
+        tags
     };
 };
 
