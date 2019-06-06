@@ -18,9 +18,7 @@ function Cerebro(config, options) {
     this._config = this._preprocess(config);
     this._customEvaluators = options && options.customEvaluators;
 
-    if (this._customEvaluators) {
-        this._validateCustomEvaluators(this._customEvaluators);
-    }
+    this._validateCustomEvaluators();
 }
 
 /**
@@ -52,7 +50,13 @@ Cerebro.rehydrate = function(dehydratedObject) {
     // if the dehydratedObject is not valid, JSON parse will fail and throw an error
     var rehydratedObj = JSON.parse(dehydratedObject);
 
-    return new CerebroConfig(rehydratedObj);
+    const {_resolved, _labels} = rehydratedObj;
+    const builtObject = {
+        answers: _resolved,
+        labels: _labels
+    };
+
+    return new CerebroConfig(builtObject);
 };
 
 /**
@@ -60,12 +64,13 @@ Cerebro.rehydrate = function(dehydratedObject) {
  * @constructor
  * @param {Object} resolvedConfig - object created by building context with settings config
  */
-function CerebroConfig(resolvedConfig) {
-    if (!resolvedConfig) {
+function CerebroConfig(resolvedConfig = {}) {
+    if (!resolvedConfig.answers) {
         throw new Error('`resolvedConfig` is required');
     }
 
-    this._resolved = resolvedConfig;
+    this._resolved = resolvedConfig.answers;
+    this._labels = resolvedConfig.labels;
 }
 
 /**
@@ -120,7 +125,10 @@ CerebroConfig.prototype.getValue = function(name) {
  * @return {JSON} Map of settings to values.
  */
 CerebroConfig.prototype.dehydrate = function() {
-    return JSON.stringify(this._resolved);
+    const {_resolved, _labels} = this;
+    const dehydratedObject = {_resolved, _labels};
+
+    return JSON.stringify(dehydratedObject);
 };
 
 /**
@@ -134,6 +142,17 @@ CerebroConfig.prototype.getRawConfig = function() {
     return this._resolved;
 };
 
+/**
+ * Returns the labels from the entries
+ *
+ * @return {Object} The labels as an object just like getRawConfig,
+ * where each key is setting name and its value is an array of string labels.
+ * Entries with no labels are represented as an empty array (not undefined).
+ */
+CerebroConfig.prototype.getLabels = function() {
+    return this._labels;
+};
+
 /** @private */
 Cerebro.prototype._preprocess = function(config) {
     // should maybe deep copy the config?
@@ -145,6 +164,7 @@ Cerebro.prototype._preprocess = function(config) {
 /** @private */
 Cerebro.prototype._build = function(context, overrides) {
     var answers = {},
+        labels = {},
         answer;
 
     this._config.forEach(function(entry) {
@@ -153,11 +173,15 @@ Cerebro.prototype._build = function(context, overrides) {
         if (answer.key) {
             if (!answers.hasOwnProperty(answer.key)) {
                 answers[answer.key] = answer.value;
+                labels[answer.key] = entry.labels || [];
             }
         }
     }, this);
 
-    return answers;
+    return {
+        answers,
+        labels
+    };
 };
 
 /**
@@ -167,7 +191,8 @@ Cerebro.prototype._build = function(context, overrides) {
  * @private
  * @param {Object} customEvaluators The object to be evaluated
  */
-Cerebro.prototype._validateCustomEvaluators = function(customEvaluators) {
+Cerebro.prototype._validateCustomEvaluators = function() {
+    var customEvaluators = this._customEvaluators;
     var key;
 
     // since customEvaluators is optional, do nothing if it is null or undefined
