@@ -21,7 +21,8 @@ declare namespace Cerebro {
     customEvaluators?: { [key: string]: Function }
   }
   interface ICerebroContext {
-    percentageSeed: string | number
+    percentageSeed?: string | number
+    [key: string]: any
   }
   interface ICerebroConfigOptions {
     overrides?: { [key: string]: any }
