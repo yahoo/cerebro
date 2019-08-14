@@ -36,7 +36,7 @@
                             "additionalProperties": true
                         },
                         "setting": {
-                            "type": "string"
+                            "type": ["string", "array"]
                         },
                         "percentage":  {
                             "type": "number",

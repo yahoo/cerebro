@@ -53,6 +53,90 @@ describe('evaluator.js', function() {
         });
     });
 
+    describe('setting', function() {
+        beforeEach(function() {
+            this.settingName = 'testFeature';
+
+            this.entry = {
+                setting: this.settingName,
+                value: true,
+                except: [
+                    {
+                        value: false,
+                        setting: 'foo'
+                    }
+                ]
+            };
+        });
+
+        it('returns the default answer if setting condition is not fulfilled', function() {
+            var context = {},
+                answers = { foo: false },
+                overrides = {},
+                answer = Evaluator.evaluate(this.entry, context, overrides, answers);
+
+            expect(answer.key).to.equal(this.settingName);
+            expect(answer.value).to.be.true;
+        });
+
+        it('returns the `except` answer if setting condition is fulfilled', function() {
+            var context = {},
+                answers = { foo: true },
+                overrides = {},
+                answer = Evaluator.evaluate(this.entry, context, overrides, answers);
+
+            expect(answer.key).to.equal(this.settingName);
+            expect(answer.value).to.be.false;
+        });
+    });
+
+    describe('settings array', function() {
+        beforeEach(function() {
+            this.settingName = 'testFeature';
+
+            this.entry = {
+                setting: this.settingName,
+                value: true,
+                except: [
+                    {
+                        value: false,
+                        setting: ['foo', 'bar']
+                    }
+                ]
+            };
+        });
+
+        it('returns the default answer if none of the settings conditions are fulfilled', function() {
+            var context = {},
+                answers = { foo: false, bar: false },
+                overrides = {},
+                answer = Evaluator.evaluate(this.entry, context, overrides, answers);
+
+            expect(answer.key).to.equal(this.settingName);
+            expect(answer.value).to.be.true;
+        });
+
+        it('returns the default answer if only some of the settings conditions are fulfilled', function() {
+            var context = {},
+                answers = { foo: false, bar: true },
+                overrides = {},
+                answer = Evaluator.evaluate(this.entry, context, overrides, answers);
+
+            expect(answer.key).to.equal(this.settingName);
+            expect(answer.value).to.be.true;
+        });
+
+        it('returns the `except` answer if all settings conditions are fulfilled', function() {
+            var context = {},
+                answers = { foo: true, bar: true },
+                overrides = {},
+                answer = Evaluator.evaluate(this.entry, context, overrides, answers);
+
+            expect(answer.key).to.equal(this.settingName);
+            expect(answer.value).to.be.false;
+        });
+    });
+
     describe('custom evaluators', function() {
         beforeEach(function() {
             this.settingName = 'testSetting';

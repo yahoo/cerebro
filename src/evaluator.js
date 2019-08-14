@@ -161,6 +161,13 @@ Evaluator = {
                 // check what the existing setting has been resolved to.
                 // we have a precondition that settings must be resolved before they are evaluated,
                 // so we can do a simple check here.
+
+                if (Array.isArray(conditionValue)) {
+                    // like setting, but for each and every setting in the conditionValue array
+                    // useful for ANDing settings (whereas ORing can be accomplished with multiple exception blocks)
+                    return conditionValue.every(cv => Boolean(answers[cv]));
+                }
+
                 return Boolean(answers[conditionValue]);
             }
 
