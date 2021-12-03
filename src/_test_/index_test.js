@@ -4,7 +4,7 @@
  */
 
 /* eslint-env mocha */
-/* eslint-disable no-unused-expressions */
+/* eslint-disable no-unused-expressions, no-console */
 
 var expect = require('chai').expect,
     Cerebro = require('../index.js'),
@@ -59,6 +59,37 @@ describe('./index.js', function() {
                         return new Cerebro(this.config, this.options);
                     }.bind(this)
                 ).to.throw(/is not a function in customEvaluators/);
+            });
+
+            it('listens to the poller if provided', function() {
+                const poller = {
+                    on: this.sandbox.stub(),
+                    start: this.sandbox.stub()
+                };
+
+                this.options.poller = poller;
+                const config = [
+                    {
+                        setting: 'answer',
+                        value: 0
+                    }
+                ];
+
+                const cerebro = new Cerebro(config, this.options);
+
+                expect(poller.on).to.have.been.calledWith('update');
+                expect(poller.start).to.have.been.calledOnce;
+
+                expect(cerebro.resolveConfig({}).getValue('answer')).to.equal(0);
+
+                poller.on.firstCall.args[1]([
+                    {
+                        setting: 'answer',
+                        value: 42
+                    }
+                ]);
+
+                expect(cerebro.resolveConfig({}).getValue('answer')).to.equal(42);
             });
         });
 
@@ -153,9 +184,7 @@ describe('./index.js', function() {
                 rawConfig = {a: 111, b: true, c: {multilevel: [1, 2]}},
                 labels = {a: ['s'], b: ['c'], c: ['s', 'c']};
 
-            this.sandbox.stub(Cerebro.prototype, '_build', function() {
-                return {answers: rawConfig, labels};
-            });
+            this.sandbox.stub(Cerebro.prototype, '_build').returns({answers: rawConfig, labels});
             this.rawConfig = rawConfig;
             this.labels = labels;
             this.cerebroConfig = cerebro.resolveConfig({});

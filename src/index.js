@@ -4,6 +4,7 @@
  */
 
 var Evaluator = require('./evaluator.js');
+const ConfigPoller = require('./config_poller');
 
 /**
  * @param {Array} config - array containing setting entries
@@ -19,6 +20,15 @@ function Cerebro(config, options) {
     this._customEvaluators = options && options.customEvaluators;
 
     this._validateCustomEvaluators();
+
+    const poller = options && options.poller;
+
+    if (poller) {
+        poller.on('update', config => {
+            this._handleConfigUpdate(config);
+        });
+        poller.start();
+    }
 }
 
 /**
@@ -36,6 +46,10 @@ Cerebro.prototype.resolveConfig = function(context, options) {
     options = options || {};
 
     return new CerebroConfig(this._build(context, options.overrides));
+};
+
+Cerebro.prototype._handleConfigUpdate = function(config) {
+    this._config = this._preprocess(config);
 };
 
 /**
@@ -58,6 +72,8 @@ Cerebro.rehydrate = function(dehydratedObject) {
 
     return new CerebroConfig(builtObject);
 };
+
+Cerebro.ConfigPoller = ConfigPoller;
 
 /**
  * Wrapper for resolvedConfig that provides convenience methods for checking value types and dehydration

@@ -251,6 +251,30 @@ An alternative way to organize and contextualize is to group settings into separ
 }]
 ```
 
+### Configuration polling
+
+This option is useful for having live configuration that updates without having to re-deploy your application. A poller object continuously calls a `fetch` function to retrieve a newer version of the configuration. This is very open ended to allow for different security mechanisms such as mTLS or signed responses.
+
+Optionally (but recommended), a configuration schema can be given to the poller to ensure that the response is a valid configuration.
+
+```js
+const Cerebro = require('cerebro');
+
+const poller = new Cerebro.ConfigPoller({
+  clientSchema: /* optional schema */,
+  interval: 5000,
+  fetch: async function() {
+    const response = await fetch(/* ... */);
+
+    return response.json();
+  }
+});
+
+const cerebro = new Cerebro(config, {
+  poller
+});
+```
+
 ## Thanks
 
 * Many thanks to Alasdair Mercer for donating the naming rights :) 

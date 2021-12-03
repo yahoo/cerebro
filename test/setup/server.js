@@ -7,7 +7,7 @@ var sinon = require('sinon');
 chai.use(sinonChai);
 
 beforeEach(function() {
-    this.sandbox = sinon.sandbox.create();
+    this.sandbox = sinon.createSandbox();
 });
 
 afterEach(function() {
