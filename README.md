@@ -196,6 +196,28 @@ One setting may depend on another setting.  In this case, the configuration woul
 
 In this case, the dependent setting will not be enabled unless the independent setting is also enabled.
 
+The setting dependency may be extended to depend on multiple settings.  In this case, the evaluation will be true only when each and every specified setting is true.  In other words, this is an AND operation between the specified settings (an OR operation can be achieved in other ways, such as using separate exception blocks).
+
+For example:
+```js
+- setting: andOfFooAndBar
+  value: false
+  except:
+    - value: true
+      settings:
+        - foo
+        - bar
+```
+or
+```js
+- setting: andOfFooAndBar
+  value: false
+  except:
+    - value: true
+      settings: [foo, bar]
+
+```
+
 ### Custom Evaluators
 We may want to evaluate a context in a custom way.  For example, we may want to use do a partial string match using a regex.
 
